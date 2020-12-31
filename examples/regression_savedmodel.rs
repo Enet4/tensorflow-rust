@@ -5,7 +5,7 @@ use std::path::Path;
 use std::result::Result;
 use tensorflow::Code;
 use tensorflow::Graph;
-use tensorflow::SavedModelBundle;
+use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::SessionRunArgs;
 use tensorflow::Status;
@@ -46,13 +46,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Load the saved model exported by regression_savedmodel.py.
     let mut graph = Graph::new();
-    let session = SavedModelBundle::load(
+    let session = Session::from_saved_model(
         &SessionOptions::new(),
         &["train", "serve"],
         &mut graph,
         export_dir,
-    )?
-    .session;
+    )?;
     let op_x = graph.operation_by_name_required("x")?;
     let op_y = graph.operation_by_name_required("y")?;
     let op_train = graph.operation_by_name_required("train")?;
